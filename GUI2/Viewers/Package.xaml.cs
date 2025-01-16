@@ -186,13 +186,13 @@ namespace GUI2.Viewers
             folderNode.Children.Add(new PackageNode { File = file, Extension = ext, DisplayName = file.GetFileName() });
         }
 
-        private void TreeView_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs args)
+        private async void TreeView_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs args)
         {
             var selectedNode = tree.SelectedItem as PackageNode;
             if (selectedNode == null) return;
             if (!selectedNode.IsFile) return;
             package.ReadEntry(selectedNode.File, out var output, validateCrc: selectedNode.File.CRC32 > 0);
-            VrfGlobalSingleton.OpenFile(selectedNode.DisplayName, output, package);
+            await VrfGlobalSingleton.OpenFile(selectedNode.DisplayName, output, package);
         }
     }
 }

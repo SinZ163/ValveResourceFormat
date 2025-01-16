@@ -1,12 +1,12 @@
 <Project Sdk="Uno.Sdk">
   <PropertyGroup>
     <TargetFrameworks>
-      net8.0-android;
-      net8.0-ios;
-      net8.0-maccatalyst;
-      net8.0-windows10.0.19041;
-      net8.0-desktop;
-      net8.0-browserwasm;
+        net9.0-android;
+        net9.0-ios;
+        net9.0-maccatalyst;
+        net9.0-windows10.0.22621;
+        net9.0-desktop;
+        net9.0-browserwasm;
     </TargetFrameworks>
 
     <OutputType>Exe</OutputType>
@@ -23,7 +23,10 @@
       
     <WindowsPackageType>None</WindowsPackageType>
     <PublishSingleFile>false</PublishSingleFile>
-    <!--
+
+    <WasmShellLoadAllSatelliteResources>true</WasmShellLoadAllSatelliteResources>
+
+      <!--
       If you encounter this error message:
 
         error NETSDK1148: A referenced assembly was compiled using a newer version of Microsoft.Windows.SDK.NET.dll.
@@ -56,14 +59,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\ValveResourceFormat\ValveResourceFormat.csproj" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.1.240916" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.1.240916" />
   </ItemGroup>
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
-    <!-- Add more community toolkit references here -->
-  </ItemGroup>
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'windows'">
-    <PackageReference Include="Uno.CommunityToolkit.WinUI.UI.Controls" Version="7.1.200" />
-    <!-- Add more uno community toolkit references here -->
-  </ItemGroup>
-
 </Project>

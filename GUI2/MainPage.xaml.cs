@@ -82,7 +82,7 @@ namespace GUI2
             try
             {
                 var filePicker = new FileOpenPicker();
-                filePicker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
+                filePicker.SuggestedStartLocation = PickerLocationId.Downloads;
                 filePicker.FileTypeFilter.Add("*");
 
 #if !HAS_UNO
@@ -91,12 +91,12 @@ namespace GUI2
                 InitializeWithWindow.Initialize(filePicker, handle);
 #endif
 
-                var files = await filePicker.PickMultipleFilesAsync();
+                var files = await filePicker.PickSingleFileAsync("Science");
 
-                foreach (var file in files)
-                {
-                    VrfGlobalSingleton.OpenFile(file);
-                }
+                //foreach (var file in files)
+                //{
+                    VrfGlobalSingleton.OpenFile(files);
+                //}
             }
             catch (Exception ex)
             {

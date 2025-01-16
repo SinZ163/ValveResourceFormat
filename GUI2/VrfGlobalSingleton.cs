@@ -14,16 +14,16 @@ namespace GUI2
     {
         public static ObservableCollection<TabViewItem> Tabs { get; set; } = new ObservableCollection<TabViewItem>();
 
-        public static void OpenFile(StorageFile file)
+        public static async Task OpenFile(StorageFile file)
         {
-            OpenFileInternal(file.Name, () => new VrfGuiContext().ProcessStorageFile(file));
+            await OpenFileInternal(file.Name, () => new VrfGuiContext().ProcessStorageFile(file));
         }
-        public static void OpenFile(string filename, byte[] data, SteamDatabase.ValvePak.Package package)
+        public static async Task OpenFile(string filename, byte[] data, SteamDatabase.ValvePak.Package package)
         {
-            OpenFileInternal(filename, () => new VrfGuiContext(filename, data, package).Process());
+            await OpenFileInternal(filename, () => new VrfGuiContext(filename, data, package).Process());
         }
 
-        private static void OpenFileInternal(string filename, Func<Task<VrfGuiContext>> func)
+        private static async Task OpenFileInternal(string filename, Func<Task<VrfGuiContext>> func)
         {
             var tab = new TabViewItem();
             tab.Header = filename;
@@ -33,6 +33,15 @@ namespace GUI2
             frame.Navigate(typeof(LoadingPage));
             Tabs.Add(tab);
 
+#if BROWSERWASM
+            try {
+                var result = await func();
+                
+                frame.Navigate(result.XamlPage, result);
+            } catch(Exception ex) {
+                frame.Navigate(typeof(ErrorPage), ex.ToString());
+            }
+#else
             var task = Task.Factory.StartNew(func);
 
             task.ContinueWith(
@@ -47,7 +56,7 @@ namespace GUI2
                 },
                 CancellationToken.None,
                 TaskContinuationOptions.OnlyOnFaulted,
-                TaskScheduler.FromCurrentSynchronizationContext());
+                TaskScheduler.Default);
 
             task.ContinueWith(
                 t =>
@@ -57,7 +66,8 @@ namespace GUI2
                 },
                 CancellationToken.None,
                 TaskContinuationOptions.OnlyOnRanToCompletion,
-                TaskScheduler.FromCurrentSynchronizationContext());
+                TaskScheduler.Default);
+#endif
         }
     }
 }
