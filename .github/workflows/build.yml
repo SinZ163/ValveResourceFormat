@@ -14,15 +14,16 @@ on:
     - '.github/*_TEMPLATE/**'
     - '*.md'
   workflow_dispatch:
-    inputs:
-      UBUNTU_ARM:
-        description: Ubuntu arm runner
-        default: 'ubuntu-24.04-arm'
   schedule:
   - cron: "0 10 1 * *"
 
 jobs:
+  actions-are-weird:
+    runs-on: ubuntu-latest
+    outputs:
+      UBUNTU_ARM: 'ubuntu-24.04-arm'
   build:
+    needs: actions-are-weird
     name: ${{ matrix.os }}
 
     strategy:
@@ -32,7 +33,7 @@ jobs:
           - ubuntu-latest
           - windows-latest
           - macos-latest
-          - '${{ inputs.UBUNTU_ARM }}'
+          - "${{ needs.actions-are-weird.outputs.UBUNTU_ARM }}"
 
     runs-on: ${{ matrix.os }}
 
@@ -89,11 +90,11 @@ jobs:
       run: dotnet publish --configuration Release --self-contained --runtime linux-x64 Decompiler/Decompiler.csproj
 
     - name: Publish CLI (Linux arm)
-      if: matrix.os == inputs.UBUNTU_ARM
+      if: matrix.os == needs.actions-are-weird.outputs.UBUNTU_ARM
       run: dotnet publish --configuration Release --self-contained --runtime linux-arm Decompiler/Decompiler.csproj
 
     - name: Publish CLI (Linux arm64)
-      if: matrix.os == inputs.UBUNTU_ARM
+      if: matrix.os == needs.actions-are-weird.outputs.UBUNTU_ARM
       run: dotnet publish --configuration Release --self-contained --runtime linux-arm64 Decompiler/Decompiler.csproj
 
     - name: Publish CLI (macOS x64)
@@ -134,14 +135,14 @@ jobs:
 
     - name: Upload CLI (Linux arm)
       uses: actions/upload-artifact@v4
-      if: matrix.os == inputs.UBUNTU_ARM
+      if: matrix.os == needs.actions-are-weird.outputs.UBUNTU_ARM
       with:
         name: cli-linux-arm
         path: Decompiler/bin/Release/linux-arm/publish
 
     - name: Upload CLI (Linux arm64)
       uses: actions/upload-artifact@v4
-      if: matrix.os == inputs.UBUNTU_ARM
+      if: matrix.os == needs.actions-are-weird.outputs.UBUNTU_ARM
       with:
         name: cli-linux-arm64
         path: Decompiler/bin/Release/linux-arm64/publish
