@@ -28,7 +28,7 @@ jobs:
           - ubuntu-latest
           - windows-latest
           - macos-latest
-          - ${{ env.UBUNTU_ARM }}
+          - ${{ jobs.build.env.UBUNTU_ARM }}
 
     runs-on: ${{ matrix.os }}
 
