@@ -24,11 +24,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest, ${{ env.UBUNTU_ARM }}]
 
     runs-on: ${{ matrix.os }}
 
     env:
+      UBUNTU_ARM: 'ubuntu-24.04-arm'
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
@@ -81,11 +82,11 @@ jobs:
       run: dotnet publish --configuration Release --self-contained --runtime linux-x64 Decompiler/Decompiler.csproj
 
     - name: Publish CLI (Linux arm)
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == vars.UBUNTU_ARM
       run: dotnet publish --configuration Release --self-contained --runtime linux-arm Decompiler/Decompiler.csproj
 
     - name: Publish CLI (Linux arm64)
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == vars.UBUNTU_ARM
       run: dotnet publish --configuration Release --self-contained --runtime linux-arm64 Decompiler/Decompiler.csproj
 
     - name: Publish CLI (macOS x64)
@@ -126,14 +127,14 @@ jobs:
 
     - name: Upload CLI (Linux arm)
       uses: actions/upload-artifact@v4
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == vars.UBUNTU_ARM
       with:
         name: cli-linux-arm
         path: Decompiler/bin/Release/linux-arm/publish
 
     - name: Upload CLI (Linux arm64)
       uses: actions/upload-artifact@v4
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == vars.UBUNTU_ARM
       with:
         name: cli-linux-arm64
         path: Decompiler/bin/Release/linux-arm64/publish
